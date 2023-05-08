@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SimpleProducerService {
 
-    private static final String topic = "exampleTopicName";
+    private static final String topic = "yoon";
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
