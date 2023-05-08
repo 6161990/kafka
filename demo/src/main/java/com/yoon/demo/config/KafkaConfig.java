@@ -25,7 +25,9 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
-    /** serialize 할 설정을 담은 connection 정보 : pub */
+    /** serialize 할 설정을 담은 connection 정보 : pub
+     * 이 외, batchSize 등도 설정할 수 있음.
+     * */
     @Bean
     public ProducerFactory<String, Object> producerFactory(){
         Map<String, Object> config = new HashMap<>();
