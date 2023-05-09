@@ -1,6 +1,5 @@
 package com.yoon.demo.config;
 
-import lombok.Getter;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -13,7 +12,6 @@ import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @Configuration
 @EnableKafka
