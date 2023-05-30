@@ -3,10 +3,7 @@ package com.yoon.demo.service;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.JoinWindows;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Printed;
+import org.apache.kafka.streams.kstream.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +49,43 @@ public class StreamService {
         joinedStream.print(Printed.toSysOut());
         // 1:leftValue_1:rightValue
         joinedStream.to("joinedMsg");
+    }
+
+    @Autowired
+    public void buildPipelineWithOtherJoin(StreamsBuilder builder){
+        // key : value -> 1:leftValue
+        KStream<String, String> leftJoin = builder.stream(
+                "leftTopic", Consumed.with(STRING_SERDE, STRING_SERDE));
+
+        // key : value -> 1:rightValue
+        KStream<String, String> rightJoin = builder.stream(
+                "rightTopic", Consumed.with(STRING_SERDE, STRING_SERDE));
+
+        // <left, right, return>
+        ValueJoiner<String, String, String> valueJoiner = (leftValue, rightValue) -> {
+            return "[StringJoiner]" +  leftJoin + "_" + rightJoin;
+        };
+
+        KStream<String, String> joinedStream = leftJoin.join(
+                rightJoin,
+                valueJoiner,
+                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1))
+        );
+
+        // <left, right, return> Outer
+        ValueJoiner<String, String, String> valueOuterJoiner = (leftValue, rightValue) -> {
+            return "[StringOuterJoiner]" +  leftJoin + "<" + rightJoin;
+        };
+
+        KStream<String, String> joinedOuterStream = leftJoin.outerJoin(
+                rightJoin,
+                valueOuterJoiner,
+                JoinWindows.ofTimeDifferenceWithNoGrace(Duration.ofMinutes(1))
+        );
+
+        joinedStream.print(Printed.toSysOut());
+        // 1:leftValue_1:rightValue
+        joinedStream.to("joinedMsg");
+        joinedOuterStream.to("joinedMsg");
     }
 }

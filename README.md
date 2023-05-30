@@ -22,3 +22,13 @@
 - Zookeeper : cluster 의 하위요소에 대한 전반적인 메타정보, Controller 정보, 선출, Broker 정보 등
 - Broker : 실제 data 를 받아 저장하고 있음
 - Controller : broker 대장 = 리더 선정, topic 생성, partition 생성, 복제본 관리 
+
+
+### Stream Join 
+| 참고 | https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/   
+
+
+![input-streams-1.jpeg](..%2F..%2F..%2FDesktop%2Finput-streams-1.jpeg)   
+![inner_stream-stream_join.jpeg](..%2F..%2F..%2FDesktop%2Finner_stream-stream_join.jpeg)   
+![left-stream-stream-join.jpeg](..%2F..%2F..%2FDesktop%2Fleft-stream-stream-join.jpeg)   
+![outer-stream-stream-join.jpeg](..%2F..%2F..%2FDesktop%2Fouter-stream-stream-join.jpeg)
