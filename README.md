@@ -32,3 +32,10 @@
 ![inner_stream-stream_join.jpeg](..%2F..%2F..%2FDesktop%2Finner_stream-stream_join.jpeg)   
 ![left-stream-stream-join.jpeg](..%2F..%2F..%2FDesktop%2Fleft-stream-stream-join.jpeg)   
 ![outer-stream-stream-join.jpeg](..%2F..%2F..%2FDesktop%2Fouter-stream-stream-join.jpeg)
+
+
+### KStream - KTable
+- KStream  : 스트림이 오면 빨대 꽂고 모든 데이터를 계속 빨아들인다. 
+- KTable : 해당 파티션 키의 최신의 상태에만 관심이 있다. 
+  1. kim:hayoon
+  2. kim:jayoon ✅ 

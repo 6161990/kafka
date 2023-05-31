@@ -62,9 +62,8 @@ public class StreamService {
                 "rightTopic", Consumed.with(STRING_SERDE, STRING_SERDE));
 
         // <left, right, return>
-        ValueJoiner<String, String, String> valueJoiner = (leftValue, rightValue) -> {
-            return "[StringJoiner]" +  leftJoin + "_" + rightJoin;
-        };
+        ValueJoiner<String, String, String> valueJoiner
+                = (leftValue, rightValue) -> "[StringJoiner]" + leftJoin + "_" + rightJoin;
 
         KStream<String, String> joinedStream = leftJoin.join(
                 rightJoin,
