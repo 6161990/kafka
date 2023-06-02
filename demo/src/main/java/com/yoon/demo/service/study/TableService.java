@@ -1,4 +1,4 @@
-package com.yoon.demo.service;
+package com.yoon.demo.service.study;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;

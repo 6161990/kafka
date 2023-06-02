@@ -1,4 +1,4 @@
-package com.yoon.demo.service;
+package com.yoon.demo.service.study;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;

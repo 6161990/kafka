@@ -1,6 +1,6 @@
-package com.yoon.demo.controller;
+package com.yoon.demo.controller.study;
 
-import com.yoon.demo.service.SimpleProducerService;
+import com.yoon.demo.service.study.SimpleProducerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
