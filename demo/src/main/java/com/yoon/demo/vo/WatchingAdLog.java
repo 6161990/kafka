@@ -16,7 +16,7 @@ import lombok.Data;
 public class WatchingAdLog {
     String userId; // uId-0001
     String productId; // pg-0001
-    String adId; // ad-101
+    String adId; // ad-101 --------> key
     String adType; // banner, clip,
     String watchingTime; // 11412s
     String watchingDt; // 20230201070000
