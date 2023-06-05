@@ -16,6 +16,9 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * -- 광고 데이터 중복 Join 될 필요 없다.
  * 광고 이력이 먼저 들어온다.
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Service;
  * 광고에 머무른 시간이 10초 이상이어야한다.
  * 특정 가격 이상의 상품은 Join 될 필요 없다.
  * 광고 이력 KTable (AdLog)
- * 구매 이력 KTable (PurchaseOneLog)
+ * 구매 이력 KTable (AllPurchaseLog)
  * filtering, 형변환
  * EffectOrNot json 형태로 --> Topic : AdEvaluationComplete
  */
@@ -64,16 +67,16 @@ public class AdEvaluationService {
         // table 속성 : key value 스토어로 데이터를 넣었다 뺐다 할 수 있고 캐싱할 수도 있음.
 
         KStream<String, PurchaseLog> purchaseLogKStream = builder
-                .stream("OrderLog", Consumed.with(Serdes.String(), purchaseLogSerde));
+                .stream("AllPurchaseLog", Consumed.with(Serdes.String(), purchaseLogSerde));
 
         purchaseLogKStream.foreach((key, value) -> {
-            for (String prodId: value.getProductIds()) {
-                if (value.getPrice() < 1000000){
+            for (Map<String, String> prodInfo: value.getProductInfos()) {
+                if (Integer.parseInt(prodInfo.get("price")) < 1000000){
                     PurchaseOneLog purchaseOneLog = PurchaseOneLog.builder()
                             .userId(value.getUserId())
                             .orderId(value.getOrderId())
-                            .price(value.getPrice())
-                            .productId(prodId)
+                            .price(Integer.parseInt(prodInfo.get("price")))
+                            .productId(prodInfo.get("productId"))
                             .purchasedDt(value.getPurchasedDt())
                             .build();
                     adEvaluationProducerService.post("PurchaseOneLog", purchaseOneLog);
@@ -89,11 +92,23 @@ public class AdEvaluationService {
                         .withValueSerde(purchaseOneLogSerde));
 
         ValueJoiner<WatchingAdLog, PurchaseOneLog, EffectedLog> valueJoiner
-                = (left, right) ->
-                EffectedLog.builder()
-                            .adId(left.getAdId())
-                            .userId(right.getUserId())
-                            .build();
+                = (left, right) -> {
 
+            Map<String, String> productInfoMap = new HashMap<>();
+            productInfoMap.put("productId",right.getProductId());
+            productInfoMap.put("price", String.valueOf(right.getPrice()));
+
+            return EffectedLog.builder()
+                    .adId(left.getAdId())
+                    .userId(right.getUserId())
+                    .orderId(right.getOrderId())
+                    .productInfo(productInfoMap)
+                    .build();
+        };
+
+
+        watchingAdLogKTable.join(purchaseOneLogKTable, valueJoiner)
+                .toStream()
+                .to("AdEvaluationComplete", Produced.with(Serdes.String(), effectOrNotSerde));
     }
 }
