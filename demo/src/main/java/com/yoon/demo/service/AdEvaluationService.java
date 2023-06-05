@@ -81,9 +81,12 @@ public class AdEvaluationService {
             }
         });
 
-        KStream<String, PurchaseOneLog> purchaseOneLogKStream = builder
+        KTable<String, PurchaseOneLog> purchaseOneLogKTable = builder
                 .stream("oneProduct", Consumed.with(Serdes.String(), purchaseOneLogSerde))
-                .selectKey((k,v)-> v.getUserId() + "_" + v.getProductId());
+                .selectKey((k,v)-> v.getUserId() + "_" + v.getProductId())
+                .toTable(Materialized.<String, PurchaseOneLog, KeyValueStore<Bytes, byte[]>>as("productOneStore")
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(purchaseOneLogSerde));
 
         ValueJoiner<WatchingAdLog, PurchaseLog, EffectedLog> valueJoiner
                 = (left, right) ->
