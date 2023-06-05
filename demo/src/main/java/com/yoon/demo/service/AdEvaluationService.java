@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  * 광고에 머무른 시간이 10초 이상이어야한다.
  * 특정 가격 이상의 상품은 Join 될 필요 없다.
  * 광고 이력 KTable (AdLog)
- * 구매 이력 KStream (OrderLog)
+ * 구매 이력 KTable (PurchaseOneLog)
  * filtering, 형변환
  * EffectOrNot json 형태로 --> Topic : AdEvaluationComplete
  */
@@ -76,19 +76,19 @@ public class AdEvaluationService {
                             .productId(prodId)
                             .purchasedDt(value.getPurchasedDt())
                             .build();
-                    adEvaluationProducerService.post("oneProduct", purchaseOneLog);
+                    adEvaluationProducerService.post("PurchaseOneLog", purchaseOneLog);
                 }
             }
         });
 
         KTable<String, PurchaseOneLog> purchaseOneLogKTable = builder
-                .stream("oneProduct", Consumed.with(Serdes.String(), purchaseOneLogSerde))
+                .stream("PurchaseOneLog", Consumed.with(Serdes.String(), purchaseOneLogSerde))
                 .selectKey((k,v)-> v.getUserId() + "_" + v.getProductId())
-                .toTable(Materialized.<String, PurchaseOneLog, KeyValueStore<Bytes, byte[]>>as("productOneStore")
+                .toTable(Materialized.<String, PurchaseOneLog, KeyValueStore<Bytes, byte[]>>as("PurchaseOneStore")
                         .withKeySerde(Serdes.String())
                         .withValueSerde(purchaseOneLogSerde));
 
-        ValueJoiner<WatchingAdLog, PurchaseLog, EffectedLog> valueJoiner
+        ValueJoiner<WatchingAdLog, PurchaseOneLog, EffectedLog> valueJoiner
                 = (left, right) ->
                 EffectedLog.builder()
                             .adId(left.getAdId())
