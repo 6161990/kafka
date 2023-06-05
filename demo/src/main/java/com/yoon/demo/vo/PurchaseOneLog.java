@@ -1,7 +1,9 @@
 package com.yoon.demo.vo;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class PurchaseOneLog {
     String orderId; // oId-0001
