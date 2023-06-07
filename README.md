@@ -43,3 +43,7 @@
 - KTable : 해당 파티션 키의 최신의 상태에만 관심이 있다. 
   1. kim:hayoon
   2. kim:jayoon ✅ 
+
+
+| 참고 |
+https://www.popit.kr/kafka-%EC%9A%B4%EC%98%81%EC%9E%90%EA%B0%80-%EB%A7%90%ED%95%98%EB%8A%94-producer-acks/
