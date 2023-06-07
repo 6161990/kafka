@@ -1,5 +1,6 @@
 package com.yoon.demo.service;
 
+import com.yoon.demo.config.KafkaConfigForAdEffectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -8,9 +9,28 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdEvaluationProducerService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private static final String DEFAULT_TOPIC = "defaultTopic";
 
-    public void post(String topic, Object message) {
+    private final KafkaConfigForAdEffectService kafkaConfigForAdEffectService;
+    private KafkaTemplate<String, Object> kafkaTemplate;
+
+    public void postForAllPurchaseLog(String topic, Object message) {
+        kafkaTemplate = kafkaConfigForAdEffectService.kafkaTemplateForAllPurchaseLog();
         kafkaTemplate.send(topic, message);
      }
+
+    public void postForWatchingAdLog(String topic, Object message) {
+        kafkaTemplate = kafkaConfigForAdEffectService.kafkaTemplateForWatchingAdLog();
+        kafkaTemplate.send(topic, message);
+    }
+
+    public void postForPurchaseOneLog(String topic, Object message) {
+        kafkaTemplate = kafkaConfigForAdEffectService.KafkaTemplateForPurchaseOneLog();
+        kafkaTemplate.send(topic, message);
+    }
+
+    public void sendJoinedMsg(Object message) {
+        kafkaTemplate = kafkaConfigForAdEffectService.KafkaTemplateForPurchaseOneLog();
+        kafkaTemplate.send(DEFAULT_TOPIC, message);
+    }
 }
