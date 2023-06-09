@@ -15,7 +15,11 @@
 - KRaft 통해 zookeeper 제거할 수 있다. (Not stable)   
 - cmak : kafka 무료 GUI
 
-   
+### 개념
+- topic : 폴더, 특정 목적으로 생성된 data 집합(구분)
+- partition : 하위 폴더. Topic의 하위 개념으로 분산을 위해 나누어 처리되는 단위, leader/follower 존재하여 실제 read/write는 리더에서 발생. follower 는 leader를 복사함.
+- replica : leader 의 장애를 대응하기 위해 만들어놓는 복사본 follower. pull 방식으로 leader에서 복제함. 
+- offset : 책갈피. consumer 가 어디까지 가져갔는지 저장하는 값. consumer group 별로 상이
 
     
 ### Zookeeper 의 역할
