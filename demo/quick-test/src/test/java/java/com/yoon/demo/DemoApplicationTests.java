@@ -1,4 +1,4 @@
-package com.yoon.demo;
+package java.com.yoon.demo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
