@@ -1,3 +1,4 @@
 rootProject.name = 'demo'
 include 'quick-test-with-stream'
+include 'quick-test-basically'
 
