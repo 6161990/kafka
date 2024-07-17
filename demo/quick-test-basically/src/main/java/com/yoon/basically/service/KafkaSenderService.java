@@ -20,7 +20,7 @@ public class KafkaSenderService {
     private static final int MAX_RETRY_ATTEMPTS = 3; // 최대 재시도 횟수
     private static final long RETRY_DELAY_MS = 1000; // 재시도 대기 시간 (밀리초)
 
-    private KafkaTemplate<Integer, String> kafkaTemplate;
+    private final KafkaTemplate<Integer, String> kafkaTemplate;
 
     // 비동기 전송 방식
     public void sendAsyncWithRetry(final MyOutputData data, int attempt){

@@ -13,7 +13,7 @@ import org.springframework.kafka.core.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+@Configuration("com.yoon.demo")
 @EnableKafka
 public class KafkaConfig {
 

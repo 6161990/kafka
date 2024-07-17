@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class SimpleProducerController {
+public class SimpleController {
 
     private final KafkaSenderService kafkaSenderService;
 
