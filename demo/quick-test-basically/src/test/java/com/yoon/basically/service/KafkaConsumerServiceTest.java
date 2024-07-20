@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 @SpringBootTest
 @Import(KafkaConfig.class)
 public class KafkaConsumerServiceTest extends AbstractTestcontainersTest {
