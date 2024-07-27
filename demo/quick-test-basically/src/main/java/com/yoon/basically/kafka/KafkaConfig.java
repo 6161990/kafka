@@ -32,7 +32,7 @@ public class KafkaConfig {
     @Bean
     public ProducerFactory<Integer, Object> producerFactory(){
         DefaultKafkaProducerFactory<Integer, Object> producerFactory = new DefaultKafkaProducerFactory<>(producerConfigs());
-//        producerFactory.setTransactionIdPrefix("tx-");
+        producerFactory.setTransactionIdPrefix("tx-");
         return producerFactory;
     }
 
@@ -64,13 +64,14 @@ public class KafkaConfig {
         //configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.yoon.basically.kafka.MemberEvent"); // 기본 역직렬
         configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, "true");
         // Kafka 메시지 헤더에 포함된 타입 정보를 사용할지 여부. 헤더에 타입 정보가 없거나 타입 정보를 사용하고 싶지 않은 경우에는 이 옵션을 비활성화해야함. 설정된 기본 타입으로 역직렬화 시도할 수 있음.
-
+//        configProps.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed"); // 여기서 isolation level 설정
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
     @Bean
-    public KafkaTemplate<Integer, Object> kafkaTemplate(KafkaProducerListener kafkaProducerListener) {
+    public KafkaTemplate<Integer, Object> kafkaTemplate(KafkaProducerInterceptor kafkaProducerInterceptor, KafkaProducerListener kafkaProducerListener) {
         KafkaTemplate<Integer, Object> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+        kafkaTemplate.setProducerInterceptor(kafkaProducerInterceptor);
         kafkaTemplate.setProducerListener(kafkaProducerListener);
         return kafkaTemplate;
     }

@@ -22,3 +22,5 @@ logging:
               BasicBinder: ERROR
     org.springframework.transaction.interceptor.TransactionInterceptor: TRACE
     org.redisson: DEBUG
+    org.apache.kafka: DEBUG
+    kafka: DEBUG
