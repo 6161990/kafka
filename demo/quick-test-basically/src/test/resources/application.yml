@@ -1,0 +1,24 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database: mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/member
+    username: root
+    password: oo09
+    hikari:
+      maximum-pool-size: 40 # for namedLocking
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: ERROR
+        type:
+          descriptor:
+            sql:
+              BasicBinder: ERROR
+    org.springframework.transaction.interceptor.TransactionInterceptor: TRACE
+    org.redisson: DEBUG

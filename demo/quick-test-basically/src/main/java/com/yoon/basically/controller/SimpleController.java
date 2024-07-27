@@ -1,6 +1,7 @@
 package com.yoon.basically.controller;
 
 import com.yoon.basically.service.KafkaSenderService;
+import com.yoon.basically.service.MemberRegisterService;
 import com.yoon.basically.vo.MyOutputData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SimpleController {
 
     private final KafkaSenderService kafkaSenderService;
+    private final MemberRegisterService memberRegisterService;
 
     @PostMapping("/producer/async")
     public void async(@RequestParam String msg){
@@ -21,5 +23,10 @@ public class SimpleController {
     @PostMapping("/producer/sync")
     public void sync(@RequestParam String msg){
         kafkaSenderService.sendSync(new MyOutputData(1, msg));
+    }
+
+    @PostMapping("/register")
+    public void register(@RequestParam String name){
+        memberRegisterService.register(name);
     }
 }
