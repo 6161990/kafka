@@ -82,8 +82,13 @@ public class KafkaSenderService {
     }
 
 
-    public void send(Member member) {
+    public void send(MemberEvent member) {
         String topic = "register";
-        kafkaTemplate.send(topic, new MemberEvent(EventType.CREATED, member.getId()));
+        kafkaTemplate.send(topic, member);
+    }
+
+    public void send(MyOutputData myOutputData) {
+        String topic = "output";
+        kafkaTemplate.send(topic, myOutputData);
     }
 }
