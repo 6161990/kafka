@@ -1,4 +1,4 @@
-package com.yoon.basically.config;
+package com.yoon.basically;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

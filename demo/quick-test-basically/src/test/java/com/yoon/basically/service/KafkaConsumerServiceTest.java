@@ -1,7 +1,7 @@
 package com.yoon.basically.service;
 
 import com.yoon.basically.AbstractTestcontainersTest;
-import com.yoon.basically.config.KafkaConfig;
+import com.yoon.basically.KafkaConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
