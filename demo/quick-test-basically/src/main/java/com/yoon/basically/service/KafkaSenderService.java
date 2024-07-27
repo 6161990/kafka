@@ -1,5 +1,8 @@
 package com.yoon.basically.service;
 
+import com.yoon.basically.domain.Member;
+import com.yoon.basically.kafka.EventType;
+import com.yoon.basically.kafka.MemberEvent;
 import com.yoon.basically.vo.MyOutputData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +23,14 @@ public class KafkaSenderService {
     private static final int MAX_RETRY_ATTEMPTS = 3; // 최대 재시도 횟수
     private static final long RETRY_DELAY_MS = 1000; // 재시도 대기 시간 (밀리초)
 
-    private final KafkaTemplate<Integer, String> kafkaTemplate;
+    private final KafkaTemplate<Integer, Object> kafkaTemplate;
 
     // 비동기 전송 방식
     public void sendAsyncWithRetry(final MyOutputData data, int attempt){
-        final ProducerRecord<Integer, String> record = createRecord(data);
+        final ProducerRecord<Integer, Object> record = createRecord(data);
 
-        CompletableFuture<SendResult<Integer, String>> future = kafkaTemplate.send(record);
-        future.whenComplete(((integerStringSendResult, throwable) -> {
+        CompletableFuture<SendResult<Integer, Object>> future = kafkaTemplate.send(record);
+        future.whenComplete(((IntegerSendResult, throwable) -> {
             if(throwable == null){
                 handleSuccess(data);
             }else {
@@ -49,7 +52,7 @@ public class KafkaSenderService {
 
     // 동기 전송 방식
     public void sendSync(final MyOutputData data){
-        final ProducerRecord<Integer, String> record = createRecord(data);
+        final ProducerRecord<Integer, Object> record = createRecord(data);
 
         try {
             kafkaTemplate.send(record).get(10, TimeUnit.SECONDS);
@@ -62,7 +65,7 @@ public class KafkaSenderService {
         }
     }
 
-    private void handleFailure(MyOutputData data, ProducerRecord<Integer, String> record, Throwable ex) {
+    private void handleFailure(MyOutputData data, ProducerRecord<Integer, Object> record, Throwable ex) {
         log.error("Failed to send message: {}. Record: {}. Error: {}", data, record, ex.getMessage());
     }
 
@@ -71,13 +74,16 @@ public class KafkaSenderService {
         // 추가 성공 로직
     }
 
-    ProducerRecord<Integer, String> createRecord(MyOutputData data) {
+    ProducerRecord<Integer, Object> createRecord(MyOutputData data) {
         Integer key = data.key();
-        String value = data.value();
 
         String topic = "hello-world";
-        return new ProducerRecord<>(topic, key, value);
+        return new ProducerRecord<>(topic, key, data);
     }
 
 
+    public void send(Member member) {
+        String topic = "register";
+        kafkaTemplate.send(topic, new MemberEvent(EventType.CREATED, member.getId()));
+    }
 }

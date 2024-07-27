@@ -1,7 +1,10 @@
 package com.yoon.basically.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoon.basically.AbstractTestcontainersTest;
-import com.yoon.basically.KafkaConfig;
+import com.yoon.basically.kafka.KafkaConfig;
+import com.yoon.basically.vo.MyOutputData;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,32 +24,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(KafkaConfig.class)
 public class KafkaConsumerServiceTest extends AbstractTestcontainersTest {
 
-    private final KafkaTemplate<Integer, String> kafkaTemplate;
+    private final KafkaTemplate<Integer, Object> kafkaTemplate;
 
-    private static final AtomicReference<String> receivedMessage = new AtomicReference<>();
+    private static final AtomicReference<Object> receivedMessage = new AtomicReference<>();
     private static final String TOPIC = "hello-world";
 
     @Autowired
-    public KafkaConsumerServiceTest(KafkaTemplate<Integer, String> kafkaTemplate) {
+    public KafkaConsumerServiceTest(KafkaTemplate<Integer, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-
     @KafkaListener(groupId = "test-group", topics = TOPIC)
-    public void listen(String message) {
-        receivedMessage.set(message);
+    public void listen(String message) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MyOutputData myOutputData = objectMapper.readValue(message, MyOutputData.class);
+        receivedMessage.set(myOutputData);
     }
 
     @Test
     void sendAndReceive() {
-        ProducerRecord<Integer, String> record = new ProducerRecord<>(TOPIC, 1, "쀼");
+        MyOutputData myOutputData = new MyOutputData(1, "쀼");
+        ProducerRecord<Integer, Object> record = new ProducerRecord<>(TOPIC, myOutputData.key(), myOutputData);
         kafkaTemplate.send(record);
 
         Awaitility.await()
                 .pollInterval(Duration.ofSeconds(3))
                 .atMost(10, TimeUnit.SECONDS)
                 .untilAsserted(() ->
-                        assertThat(receivedMessage.get()).isEqualTo("쀼")
+                        assertThat(receivedMessage.get()).isEqualTo(myOutputData)
                 );
     }
 
