@@ -4,3 +4,6 @@ POST http://localhost:8080/producer/sync?msg=h~
 
 ### register
 POST http://localhost:8080/register?name=윤쥐
+
+### register2
+POST http://localhost:8080/register2?name=윤쥐

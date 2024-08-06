@@ -61,19 +61,18 @@ public class KafkaConfig {
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
         configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // "com.yoon.basically.kafka" : 역직렬화할 수 있는 패키지
-        //configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.yoon.basically.kafka.MemberEvent"); // 기본 역직렬
+//        configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false"); // 수동 커밋 모드 설정 : 컨슈머가 특정 오프셋까지 메시지를 처리했음을 broker 에 알리는 행위
+//        configProps.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "3000");
         configProps.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, "true");
+        configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "3000"); // 3초로 설정 소비자가 poll() 호출을 최대한 기다릴 수 있는 시간입니다. 이 시간이 지나면 소비자는 리밸런스를 트리거하여 오프셋을 재분배합니다.
+        // configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest"); // 또는 "latest", "none"
+        // configProps.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.yoon.basically.kafka.MemberEvent"); // 기본 역직렬
+        configProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "3000"); // 3초로 설정 소비자가 poll() 호출을 최대한 기다릴 수 있는 시간입니다. 이 시간이 지나면 소비자는 리밸런스를 트리거하여 오프셋을 재분배합니다.
+        // configProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "3000"); // 5초로 설정
+        // configProps.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "1000"); // 1초로 설정. Heartbeat must be set lower than the session timeout
         // Kafka 메시지 헤더에 포함된 타입 정보를 사용할지 여부. 헤더에 타입 정보가 없거나 타입 정보를 사용하고 싶지 않은 경우에는 이 옵션을 비활성화해야함. 설정된 기본 타입으로 역직렬화 시도할 수 있음.
-//        configProps.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed"); // 여기서 isolation level 설정
+        // configProps.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed"); // 여기서 isolation level 설정
         return new DefaultKafkaConsumerFactory<>(configProps);
-    }
-
-    @Bean
-    public KafkaTemplate<Integer, Object> kafkaTemplate(KafkaProducerInterceptor kafkaProducerInterceptor, KafkaProducerListener kafkaProducerListener) {
-        KafkaTemplate<Integer, Object> kafkaTemplate = new KafkaTemplate<>(producerFactory());
-        kafkaTemplate.setProducerInterceptor(kafkaProducerInterceptor);
-        kafkaTemplate.setProducerListener(kafkaProducerListener);
-        return kafkaTemplate;
     }
 
     /** kafkaListener 가 concurrently 하게 consumer Factory 정보를 listening */
@@ -84,5 +83,13 @@ public class KafkaConfig {
         cklc.setCommonErrorHandler(errorHandler());
         cklc.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
         return cklc;
+    }
+
+    @Bean
+    public KafkaTemplate<Integer, Object> kafkaTemplate(KafkaProducerInterceptor kafkaProducerInterceptor, KafkaProducerListener kafkaProducerListener) {
+        KafkaTemplate<Integer, Object> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+        kafkaTemplate.setProducerInterceptor(kafkaProducerInterceptor);
+        kafkaTemplate.setProducerListener(kafkaProducerListener);
+        return kafkaTemplate;
     }
 }

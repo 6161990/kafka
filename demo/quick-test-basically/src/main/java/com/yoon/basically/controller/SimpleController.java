@@ -29,4 +29,9 @@ public class SimpleController {
     public void register(@RequestParam String name){
         memberRegisterService.register(name);
     }
+
+    @PostMapping("/register2")
+    public void register2(@RequestParam String name){
+        memberRegisterService.register2(name);
+    }
 }

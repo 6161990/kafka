@@ -26,6 +26,14 @@ public class MemberRegisterService {
 
     @Transactional
     public void register2(String name) {
+        Member member = new Member(1L, name);
+        memberRepository.save(member);
+
+        kafkaSenderService.send2(new MemberEvent(EventType.CREATED, member.getId()));
+    }
+
+    @Transactional
+    public void output(String name) {
         Member member = new Member(10L, name);
         memberRepository.save(member);
 
