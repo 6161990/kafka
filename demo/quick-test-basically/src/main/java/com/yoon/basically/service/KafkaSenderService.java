@@ -92,8 +92,8 @@ public class KafkaSenderService {
         kafkaTemplate.send(topic, member);
     }
 
-    public void send(MyOutputData myOutputData) {
-        String topic = "output";
-        kafkaTemplate.send(topic, myOutputData);
+    public void sendDependsOnInputData(MyOutputData myOutputData) {
+        kafkaTemplate.send(myOutputData.value(), myOutputData);
     }
+
 }

@@ -21,7 +21,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class MyKafkaEventListener {
 
-    @KafkaListener(groupId = "test-group", topics = "register")
+//    @KafkaListener(groupId = "test-group", topics = "register", containerFactory = "kafkaListenerContainerFactory")
     public void listen(@Payload MemberEvent memberEvent,
                        @Header(KafkaHeaders.ACKNOWLEDGMENT) Acknowledgment acknowledgment) {
         log.info("===== MyKafkaEventListener: Received a message =====");
@@ -36,7 +36,7 @@ public class MyKafkaEventListener {
         }
     }
 
-    @KafkaListener(groupId = "test-group", topics = "register2")
+//    @KafkaListener(groupId = "test-group", topics = "register2", containerFactory = "kafkaListenerContainerFactory")
     public void listen(@Payload MemberEvent memberEvent, ConsumerRecord<?, ?> consumerRecord, Consumer<?, ?> consumer) {
         try {
             log.info("===== MyKafkaEventListener: [register2] Received a message =====");
@@ -49,18 +49,23 @@ public class MyKafkaEventListener {
         }
     }
 
-    @KafkaListener(groupId = "test-group", topics = "output")
-    public void listen(@Payload MyOutputData myOutputData,
-                       @Header(KafkaHeaders.ACKNOWLEDGMENT) Acknowledgment acknowledgment) {
-        log.info("===== MyKafkaEventListener: Received a message =====");
-
+    @KafkaListener(groupId = "test-group2", topics = "topicA", containerFactory = "kafkaListenerContainerFactory2")
+    public void listen(@Payload MyOutputData myOutputData) {
+        log.info("===== MyKafkaEventListener: [topicA] Received a message =====");
         try {
             log.info("MyKafkaEventListener :: data={}", myOutputData);
-            acknowledgment.acknowledge();
-            log.info("Message acknowledged successfully.");
         } catch (Exception e) {
             log.error("An unexpected error occurred while processing the message: {}", myOutputData, e);
-            // acknowledgment.acknowledge();
+        }
+    }
+
+    @KafkaListener(groupId = "test-group2", topics = {"topicB"}, containerFactory = "kafkaListenerContainerFactory2")
+    public void listen2(@Payload MyOutputData myOutputData) {
+        log.info("===== MyKafkaEventListener: [topicB] Received a message =====");
+        try {
+            log.info("MyKafkaEventListener :: data={}", myOutputData);
+        } catch (Exception e) {
+            log.error("An unexpected error occurred while processing the message: {}", myOutputData, e);
         }
     }
 }

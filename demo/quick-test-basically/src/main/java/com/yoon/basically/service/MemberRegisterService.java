@@ -33,10 +33,10 @@ public class MemberRegisterService {
     }
 
     @Transactional
-    public void output(String name) {
+    public void sendDependsOnInputData(String name) {
         Member member = new Member(10L, name);
         memberRepository.save(member);
 
-        kafkaSenderService.send(new MyOutputData(1, name));
+        kafkaSenderService.sendDependsOnInputData(new MyOutputData(1, name));
     }
 }

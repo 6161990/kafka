@@ -7,3 +7,11 @@ POST http://localhost:8080/register?name=윤쥐
 
 ### register2
 POST http://localhost:8080/register2?name=윤쥐
+
+
+### sendDependsOnInputData
+POST http://localhost:8080/send_depends_on_input_data?name=topicA
+
+
+### sendDependsOnInputData2
+POST http://localhost:8080/send_depends_on_input_data?name=topicB

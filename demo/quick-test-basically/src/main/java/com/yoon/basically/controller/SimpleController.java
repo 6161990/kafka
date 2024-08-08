@@ -34,4 +34,9 @@ public class SimpleController {
     public void register2(@RequestParam String name){
         memberRegisterService.register2(name);
     }
+
+    @PostMapping("/send_depends_on_input_data")
+    public void sendDependsOnInputData(@RequestParam String name){
+        memberRegisterService.sendDependsOnInputData(name);
+    }
 }

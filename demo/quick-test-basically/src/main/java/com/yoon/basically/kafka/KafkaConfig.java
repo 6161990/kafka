@@ -1,5 +1,10 @@
 package com.yoon.basically.kafka;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.DescribeTopicsResult;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
@@ -17,8 +22,10 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 @EnableKafka
 public class KafkaConfig {
@@ -75,6 +82,17 @@ public class KafkaConfig {
         return new DefaultKafkaConsumerFactory<>(configProps);
     }
 
+    @Bean
+    public ConsumerFactory<Integer, Object> consumerFactory2() {
+        Map<String, Object> configProps = new HashMap<>();
+        configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapConsumerServers);
+        configProps.put(ConsumerConfig.GROUP_ID_CONFIG, "test-group2");
+        configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
+        configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class.getName());
+        configProps.put(JsonDeserializer.TRUSTED_PACKAGES, "*"); // "com.yoon.basically.kafka" : 역직렬화할 수 있는 패키지
+        return new DefaultKafkaConsumerFactory<>(configProps);
+    }
+
     /** kafkaListener 가 concurrently 하게 consumer Factory 정보를 listening */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Integer, Object> kafkaListenerContainerFactory(){
@@ -82,6 +100,16 @@ public class KafkaConfig {
         cklc.setConsumerFactory(consumerFactory());
         cklc.setCommonErrorHandler(errorHandler());
         cklc.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return cklc;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<Integer, Object> kafkaListenerContainerFactory2(){
+        ConcurrentKafkaListenerContainerFactory<Integer, Object> cklc = new ConcurrentKafkaListenerContainerFactory<>();
+        cklc.setConsumerFactory(consumerFactory2());
+        cklc.setCommonErrorHandler(errorHandler());
+        cklc.setConcurrency(2);
+        cklc.getContainerProperties().setAckMode(ContainerProperties.AckMode.BATCH);
         return cklc;
     }
 
